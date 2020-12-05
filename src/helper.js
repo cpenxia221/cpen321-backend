@@ -1,6 +1,6 @@
 
 //const server_data = require('./server')
-
+const moment = require('moment-timezone');
 
 function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
     var R = 6371; // Radius of the earth in km
@@ -16,8 +16,13 @@ function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
     return Math.round(d);
   }
   
-  function deg2rad(deg) {
-    return deg * (3.14159/180)
-  }
+function deg2rad(deg) {
+    return deg * (Math.PI/180);
+}
 
-module.exports = {getDistanceFromLatLonInKm};
+function getTimeRemain(cur_time,get_dest){
+  return get_dest() - cur_time;
+}
+
+
+module.exports = {getDistanceFromLatLonInKm, getTimeRemain};

@@ -3,7 +3,7 @@
 
 const helper = require('../src/helper');
 
-test('DB connection test',() =>{
+test('getDistance test',() =>{
     expect(helper.getDistanceFromLatLonInKm(current_loc.lantitude,current_loc.longtitude,dest_loc.lantitude,dest_loc.longtitude)).toBeCloseTo(2319);
 })
 
@@ -16,3 +16,9 @@ var dest_loc = {
     "longtitude" : 70,
     "lantitude"  : 80
 }
+
+const mockCallback = jest.fn(x => 5134);
+
+test('timeRemain test',() =>{
+    expect(helper.getTimeRemain(3619,mockCallback)).toBe(1515);
+})
