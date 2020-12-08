@@ -4,7 +4,7 @@
 const helper = require('../src/helper');
 
 test('getDistance test',() =>{
-    expect(helper.getDistanceFromLatLonInKm(current_loc.lantitude,current_loc.longtitude,dest_loc.lantitude,dest_loc.longtitude)).toBeCloseTo(2319);
+    expect(helper.getDistance(current_loc.lantitude,current_loc.longtitude,dest_loc.lantitude,dest_loc.longtitude)).toBeCloseTo(2319);
 })
 
 var current_loc = {
