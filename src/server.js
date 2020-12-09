@@ -171,42 +171,59 @@ app.use('/acept_invat',(req,res)=>{
 });
 
 function DB_op(string){
-    connection.query(string,(err,result)=>{
+    var result
+    connection.query(string,(err,res)=>{
         if(err){
-            console.log(err)
-            return -1
+            console.log(string)
+            result = -1
         }
-        else
-            return result
-
+        else{
+            result = res
+        }
     })
+    return result
 }
 
 function addgroup(sendername,receivername,groupid){
     var id = groupid
     var change_receiver_group = "UPDATE userinfo SET groupid ='" + id + "' WHERE username='" + receivername + "'" 
     var change_sender_group = "UPDATE userinfo SET groupid ='" + id + "' WHERE username='" + sendername + "'" 
-    var group_create_sql = "insert into groupsinfo(member1,member2) values('" + sendername + "','" + receivername + "')"
+    var group_create_sql = "insert into groupsinfo (member1,member2) values ('" + sendername + "','" + receivername + "')"
     var search_groupid = "select * from groupsinfo where member1='" + sendername + "'"
-    if(groupid != ''){
+    if(groupid != -1){
          DB_op(change_receiver_group)
-         var group = DB_op(search_groupid)[0]
-         if(group.member3 == ''){
-            DB_op("UPDATE groupsinfo SET member3 ='" + receivername + "' WHERE  groupid ='" + groupid + "'" )
-         }
-         else if(group.member4 == ''){
-            DB_op("UPDATE groupsinfo SET member4 ='" + receivername + "' WHERE  groupid ='" + groupid + "'" )
-         }
-         else{
-            DB_op("UPDATE groupsinfo SET member5 ='" + receivername + "' WHERE  groupid ='" + groupid + "'" )  
-         }
-         return
+         connection.query(search_groupid,(err,res)=>{
+            if(err){
+            }
+            else{
+                if(res[0].member3 == null){
+                    connection.query("UPDATE groupsinfo SET member3 ='" + receivername + "' WHERE  groupid ='" + groupid + "'")
+                }
+                else if(res[0].member4 == null){
+                    connection.query("UPDATE groupsinfo SET member4 ='" + receivername + "' WHERE  groupid ='" + groupid + "'")
+                }
+                else{
+                    connection.query("UPDATE groupsinfo SET member5 ='" + receivername + "' WHERE  groupid ='" + groupid + "'")
+                }
+            }
+        })
+         return 1
     }
     else{
-        DB_op(group_create_sql)
-        id = DB_op(search_groupid)[0].groupid
-        DB_op(change_receiver_group)
-        DB_op(change_sender_group)
+        DB_op(group_create_sql);
+        connection.query(search_groupid,(err,res)=>{
+            var op1 = "UPDATE userinfo SET groupid ='" + res[0].groupid + "' WHERE username='" + receivername + "'"
+            var op2 = "UPDATE userinfo SET groupid ='" + res[0].groupid + "' WHERE username='" + sendername + "'"
+            connection.query(op1)
+            connection.query(op2)
+            console.log(res)
+        })
+        // var group = DB_op(search_groupid)
+        // console.log(group)
+        // id = group[0].groupid
+        // DB_op(change_receiver_group)
+        // DB_op(change_sender_group)
+        return 1
     }
 }
 
@@ -217,11 +234,11 @@ app.get('/time',function(req,res){
     res.status(200).send(moment().format('MMMM Do YYYY, h:mm:ss a'));
 })
 
-var server = app.listen(8081, function () {
-    var host = server.address().address
-    var port = server.address().port
-    console.log("Example app listening at http://%s:%s", host, port)
-    })
+// var server = app.listen(8081, function () {
+//     var host = server.address().address
+//     var port = server.address().port
+//     console.log("Example app listening at http://%s:%s", host, port)
+//     })
 
 var current_loc = {
     "longtitude" : 110,
@@ -233,6 +250,19 @@ var dest_loc = {
     "lantitude"  : 120
 }
 
-module.exports = {current_loc, dest_loc};
+module.exports = {current_loc, dest_loc, addgroup};
 
 
+    // exports.selectUserName=function(user_Name, callback){
+	// var sql=`select user_Name from users_personal where user_Name=?`; 
+	// mysqlConnection.query(sql,user_Name,function(err,result){
+    //     if(err){
+	// 		console.log('[错误] --- ',err.message);
+	// 		return;
+	// 	} 
+    //     console.log(result)
+        
+    //     callback(result)    //此处callback就是将值取出来
+        
+    // 	}); 
+    // };
