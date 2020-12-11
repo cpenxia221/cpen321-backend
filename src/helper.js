@@ -24,5 +24,5 @@ function getTimeRemain(cur_time,get_dest){
   return get_dest() - cur_time;
 }
 
-
+//M7 demo
 module.exports = {getDistance, getTimeRemain};
