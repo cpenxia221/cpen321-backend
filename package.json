@@ -6,6 +6,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
+    "axios": "^0.21.0",
     "express": "^4.17.1",
     "jest": "^26.6.3",
     "moment-timezone": "^0.5.32",

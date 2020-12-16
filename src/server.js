@@ -2,6 +2,7 @@ var express = require('express');
 var moment = require('moment-timezone');
 var mysql = require('mysql');
 
+
 var app = express();
 app.use(express.json());
 
@@ -234,35 +235,14 @@ app.get('/time',function(req,res){
     res.status(200).send(moment().format('MMMM Do YYYY, h:mm:ss a'));
 })
 
-// var server = app.listen(8081, function () {
-//     var host = server.address().address
-//     var port = server.address().port
-//     console.log("Example app listening at http://%s:%s", host, port)
-//     })
+var server = app.listen(8081, function () {
+    var host = server.address().address
+    var port = server.address().port
+    console.log("Example app listening at http://%s:%s", host, port)
+    })
 
-var current_loc = {
-    "longtitude" : 110,
-    "lantitude"  : 110
-}
-
-var dest_loc = {
-    "longtitude" : 120,
-    "lantitude"  : 120
-}
-
-module.exports = {current_loc, dest_loc, addgroup};
+module.exports = {DB_op}
 
 
-    // exports.selectUserName=function(user_Name, callback){
-	// var sql=`select user_Name from users_personal where user_Name=?`; 
-	// mysqlConnection.query(sql,user_Name,function(err,result){
-    //     if(err){
-	// 		console.log('[错误] --- ',err.message);
-	// 		return;
-	// 	} 
-    //     console.log(result)
-        
-    //     callback(result)    //此处callback就是将值取出来
-        
-    // 	}); 
-    // };
+
+
