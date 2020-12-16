@@ -77,11 +77,11 @@ app.use('/reg',(req,res)=>{
 });
 
 
-app.use('/get_invat',(req,res)=>{
-    var invatinfo = {
+app.use('/get_invit',(req,res)=>{
+    var invitinfo = {
         "receiver" : req.body.receiver
     }
-    var seeksql =  "select * from invitations where receiver='" + invatinfo.receiver + "'"
+    var seeksql =  "select * from invitations where receiver='" + invitinfo.receiver + "'"
 
     connection.query(seeksql,(err,result)=>{
         if(err){
@@ -97,17 +97,17 @@ app.use('/get_invat',(req,res)=>{
     })
 });
 
-app.use('/acept_invat',(req,res)=>{
-    var invatinfo = {
+app.use('/acept_invit',(req,res)=>{
+    var invitinfo = {
         "sender" : req.body.sender,
         "receiver" : req.body.receiver,
         "op"       : req.body.op
     }
     
-    var seeksql =  "select * from invitations where receiver='" + invatinfo.receiver + "'"
-    var sender_if_group_sql =  "select * from userinfo where username='" + invatinfo.sender + "'"
-    var receiver_if_group_sql = "select * from userinfo where username='" + invatinfo.receiver + "'"
-    var delete_invit_sql = "DELETE FROM invitations WHERE receiver='" +  invatinfo.receiver + "'"
+    var seeksql =  "select * from invitations where receiver='" + invitinfo.receiver + "'"
+    var sender_if_group_sql =  "select * from userinfo where username='" + invitinfo.sender + "'"
+    var receiver_if_group_sql = "select * from userinfo where username='" + invitinfo.receiver + "'"
+    var delete_invit_sql = "DELETE FROM invitations WHERE receiver='" +  invitinfo.receiver + "'"
 
     var sender_groupid = -1;
     var receiver_groupid = -1;
@@ -150,25 +150,63 @@ app.use('/acept_invat',(req,res)=>{
         if(result == ''){
             res.json({code:401,msg:"Invitation not exist!"})
         }
-        else if(result.body.receiver != invatinfo.receiver){
+        else if(result.body.receiver != invitinfo.receiver){
             DB_op(delete_invit_sql)
             res.json({code:404,msg:"Sender not found!"})
         }
         else if(result.body.op == "refuse"){
             DB_op(delete_invit_sql)
-            res.json({code:403,msg:"Invatation refused!"})
+            res.json({code:403,msg:"invitation refused!"})
         }
         else if(receiver_groupid != -1){
             DB_op(delete_invit_sql)
             res.json({code:402,msg:"Already grouped!"})
         }
         else{
-            addgroup(invatinfo.sender,invatinfo.receiver,sender_groupid)
+            addgroup(invitinfo.sender,invitinfo.receiver,sender_groupid)
             DB_op(delete_invit_sql)
             res.json({code:100,msg:"Succeed!"})
         }
     })
 
+});
+
+app.use('/send_invit',(req,res)=>{
+    var invitinfo = {
+        "sender" : req.body.sender,
+        "receiver" : req.body.receiver,
+    }
+    var seeksql =  "select * from invitations where receiver='" + invitinfo.receiver + "'"
+    var seekusersql =  "select * from userinfo where username='" + invitinfo.receiver + "'" 
+    var addinvitsql = "insert into invitations(sender,receiver) values('" + invitinfo.sender + "','" + invitinfo.receiver + "')"
+    connection.query(seekusersql,(err,result)=>{
+        if(err){
+            console.log(err)
+            return
+        }
+        if(result == ''){
+            res.json({code:404,msg:"Receiver id not found"})
+            console.log("Receiver id not found")
+        }
+        else{
+            connection.query(seeksql,(err1,result2)=>{
+                if(err1){
+                    console.log(err)
+                    return
+                }
+                if(result2 != ''){
+                    res.json({code:403,msg:"Receiver have a invitation pending"})
+                    console.log("Receiver have a invitation pending")
+                }
+                else{
+                    connection.query(addinvitsql);
+                    res.json({code: 100})
+                    console.log("Invitation added succeeded")
+                }
+            })
+        }
+    })
+  
 });
 
 function DB_op(string){
