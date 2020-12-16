@@ -92,7 +92,7 @@ app.use('/get_invit',(req,res)=>{
             res.json({code:401,msg:"Invitation not exist!"})
         }
         else{
-            res.json({code: 100, sender:result.body.sender})
+            res.json({code: 100, sender:result[0].sender})
         }
     })
 });
@@ -171,6 +171,7 @@ app.use('/acept_invit',(req,res)=>{
 
 });
 
+// tested
 app.use('/send_invit',(req,res)=>{
     var invitinfo = {
         "sender" : req.body.sender,
