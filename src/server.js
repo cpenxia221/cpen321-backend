@@ -24,6 +24,7 @@ connection.connect(function(err){
     console.log('connection succeed.');
 });
 
+// tested
 app.use('/login',function(req, res){
     var login_info = {
         "username": req.body.username,
@@ -46,6 +47,7 @@ app.use('/login',function(req, res){
     })
 });
 
+//tested
 app.use('/reg',(req,res)=>{
     var reginfo = {
         "username" : req.body.username,
@@ -76,7 +78,7 @@ app.use('/reg',(req,res)=>{
     })
 });
 
-
+//tested
 app.use('/get_invit',(req,res)=>{
     var invitinfo = {
         "receiver" : req.body.receiver
@@ -92,15 +94,16 @@ app.use('/get_invit',(req,res)=>{
             res.json({code:401,msg:"Invitation not exist!"})
         }
         else{
-            res.json({code: 100, sender:result[0].sender})
+            res.json({code: 100, invitations:result[0]})
         }
     })
 });
 
-app.use('/acept_invit',(req,res)=>{
+app.use('/accept_invit',(req,res)=>{
     var invitinfo = {
         "sender" : req.body.sender,
         "receiver" : req.body.receiver,
+        "groupid"  : req.body.groupid,
         "op"       : req.body.op
     }
     
@@ -109,65 +112,55 @@ app.use('/acept_invit',(req,res)=>{
     var receiver_if_group_sql = "select * from userinfo where username='" + invitinfo.receiver + "'"
     var delete_invit_sql = "DELETE FROM invitations WHERE receiver='" +  invitinfo.receiver + "'"
 
-    var sender_groupid = -1;
-    var receiver_groupid = -1;
-
+    //var sender_groupid = -1;
+    //var receiver_groupid = -1;
     connection.query(sender_if_group_sql,(err,result)=>{
         if(err){
             console.log(err)
             return
         }
         if(result == ''){
-            res.json({code:404,msg:"User not exist!"})
-            return
-        }
-        else if(result[0].groupid != ''){
-            sender_groupid = result[0].groupid
-        }
-
-    })
-
-    connection.query(receiver_if_group_sql,(err,result)=>{
-        if(err){
-            console.log(err)
-            return
-        }
-        if(result == ''){
-            res.json({code:404,msg:"User not exist!"})
-            return
-        }
-        else if(result[0].groupid != ''){
-            receiver_groupid = result[0].groupid
-        }
-
-    })
-
-    connection.query(seeksql,(err,result)=>{
-        if(err){
-            console.log(err)
-            return
-        }
-        if(result == ''){
-            res.json({code:401,msg:"Invitation not exist!"})
-        }
-        else if(result.body.receiver != invitinfo.receiver){
-            DB_op(delete_invit_sql)
-            res.json({code:404,msg:"Sender not found!"})
-        }
-        else if(result.body.op == "refuse"){
-            DB_op(delete_invit_sql)
-            res.json({code:403,msg:"invitation refused!"})
-        }
-        else if(receiver_groupid != -1){
-            DB_op(delete_invit_sql)
-            res.json({code:402,msg:"Already grouped!"})
+            res.json({code:401,msg:"sender not exist!"})
         }
         else{
-            addgroup(invitinfo.sender,invitinfo.receiver,sender_groupid)
-            DB_op(delete_invit_sql)
-            res.json({code:100,msg:"Succeed!"})
+            var receiver_groupid = result[0].groupid
+            connection.query(seeksql,(err2,result2)=>{
+                console.log(receiver_groupid)
+                if(err2){
+                    console.log(err)
+                    return
+                }
+                if(result2 == ''){
+                    res.json({code:405,msg:"Invitation not exist!"})
+                    DB_op(delete_invit_sql)
+                }
+                else if(result2[0].sender != invitinfo.sender){
+                    DB_op(delete_invit_sql)
+                    res.json({code:404,msg:"sender not match!"})
+                }
+                else if(invitinfo.op == "refuse"){
+                    DB_op(delete_invit_sql)
+                    res.json({code:403,msg:"invitation refused!"})
+                }
+                else if(receiver_groupid != "-1"){
+                    DB_op(delete_invit_sql)
+                    res.json({code:402,msg:"Already grouped!"})
+                }
+                else if(invitinfo.groupid != -1){
+                    DB_op(delete_invit_sql)
+                    addgroup(invitinfo.sender,invitinfo.receiver,invitinfo.groupid)
+                    res.json({code:100,msg:"Succeed!"})
+                }
+                else if(invitinfo.groupid == -1){
+                    DB_op(delete_invit_sql)
+                   // creategroup(invitinfo.sender,invitinfo.receiver)
+                    creategroup(invitinfo.sender,invitinfo.receiver)
+                    res.json({code:101,msg:"Succeed2!"})
+                }
+            })
         }
     })
+
 
 });
 
@@ -179,7 +172,8 @@ app.use('/send_invit',(req,res)=>{
     }
     var seeksql =  "select * from invitations where receiver='" + invitinfo.receiver + "'"
     var seekusersql =  "select * from userinfo where username='" + invitinfo.receiver + "'" 
-    var addinvitsql = "insert into invitations(sender,receiver) values('" + invitinfo.sender + "','" + invitinfo.receiver + "')"
+    var seeksendersql =  "select * from userinfo where username='" + invitinfo.sender + "'" 
+    
     connection.query(seekusersql,(err,result)=>{
         if(err){
             console.log(err)
@@ -190,9 +184,9 @@ app.use('/send_invit',(req,res)=>{
             console.log("Receiver id not found")
         }
         else{
-            connection.query(seeksql,(err1,result2)=>{
-                if(err1){
-                    console.log(err)
+            connection.query(seeksql,(err2,result2)=>{
+                if(err2){
+                    console.log(err2)
                     return
                 }
                 if(result2 != ''){
@@ -200,9 +194,12 @@ app.use('/send_invit',(req,res)=>{
                     console.log("Receiver have a invitation pending")
                 }
                 else{
-                    connection.query(addinvitsql);
-                    res.json({code: 100})
-                    console.log("Invitation added succeeded")
+                    connection.query(seeksendersql,(err3,result3)=>{
+                        var addinvitsql = "insert into invitations(sender,receiver,groupid) values('" + invitinfo.sender + "','" + invitinfo.receiver + "','" + result3[0].groupid + "')"
+                        connection.query(addinvitsql);
+                        res.json({code: 100})
+                        console.log("Invitation added succeeded")
+                    })
                 }
             })
         }
@@ -210,11 +207,61 @@ app.use('/send_invit',(req,res)=>{
   
 });
 
+
+app.use('/get_group',(req,res)=>{
+    var userinfo = {
+        "username" : req.body.username
+    }
+ var seekusersql =  "select * from userinfo where username='" + userinfo.username + "'" 
+ connection.query(seekusersql,(err,res1)=>{
+        if(err){
+            console.log("error!")
+            result = -1
+        }
+        else{
+            if(res1[0].groupid == -1){
+                res.json({groupid : -1})  
+            }
+            else{
+                var seekgroupsql = "select * from groupsinfo where groupid='" + res1[0].groupid + "'"
+                connection.query(seekgroupsql,(err2,res2)=>{
+                    res.json({groupid: res2[0].groupid,member1: res2[0].member1,member2: res2[0].member2,member3: res2[0].member3,member4: res2[0].member4,member5: res2[0].member5,alert: res2[0].alert})
+                })
+            }
+            
+        }
+    })
+})
+
+app.use('/switchalert',(req,res)=>{
+    var reqinfo = {
+        "groupid" : req.body.groupid
+    }
+    var seekgroupsql = "select * from groupsinfo where groupid='" + reqinfo.groupid + "'"
+    connection.query(seekgroupsql,(err,res)=>{
+        if(err){
+            console.log("error!")
+            result = -1
+        }
+        else{
+            if(res[0].alert == 0){
+                var turnOnAlertsql = "UPDATE groupsinfo SET alert ='" + "1" + "' WHERE groupid='" + reqinfo.groupid + "'" 
+                connection.query(turnOnAlertsql)
+            }
+            else if(res[0].alert == 1){
+                var turnOnAlertsql2 = "UPDATE groupsinfo SET alert ='" + "0" + "' WHERE groupid='" + reqinfo.groupid + "'" 
+                connection.query(turnOnAlertsql2)
+            }
+        }
+    })
+})
+
+
 function DB_op(string){
     var result
     connection.query(string,(err,res)=>{
         if(err){
-            console.log(string)
+            console.log("error!")
             result = -1
         }
         else{
@@ -225,46 +272,52 @@ function DB_op(string){
 }
 
 function addgroup(sendername,receivername,groupid){
-    var id = groupid
-    var change_receiver_group = "UPDATE userinfo SET groupid ='" + id + "' WHERE username='" + receivername + "'" 
-    var change_sender_group = "UPDATE userinfo SET groupid ='" + id + "' WHERE username='" + sendername + "'" 
+   
+    var change_receiver_group = "UPDATE userinfo SET groupid ='" + groupid + "' WHERE username='" + receivername + "'" 
+    var change_sender_group = "UPDATE userinfo SET groupid ='" + groupid + "' WHERE username='" + sendername + "'" 
+   
+    var search_groupid = "select * from groupsinfo where groupid='" + groupid + "'"
+
+    connection.query(search_groupid,(err,res)=>{   
+        if(res[0].member1 == null) {
+            connection.query("UPDATE groupsinfo SET member1 ='" + receivername + "' WHERE  groupid ='" + groupid + "'")
+            connection.query(change_receiver_group)
+        }
+        if(res[0].member2 == null) {
+            connection.query("UPDATE groupsinfo SET member2 ='" + receivername + "' WHERE  groupid ='" + groupid + "'")
+            connection.query(change_receiver_group)
+        }
+        else if(res[0].member3 == null){
+            connection.query("UPDATE groupsinfo SET member3 ='" + receivername + "' WHERE  groupid ='" + groupid + "'")
+            connection.query(change_receiver_group)
+        }
+        else if(res[0].member4 == null){
+            connection.query("UPDATE groupsinfo SET member4 ='" + receivername + "' WHERE  groupid ='" + groupid + "'")
+            connection.query(change_receiver_group)
+        }
+        else if(res[0].member5 == null){
+            connection.query("UPDATE groupsinfo SET member5 ='" + receivername + "' WHERE  groupid ='" + groupid + "'")
+            connection.query(change_receiver_group)
+        }
+        else{
+            console.log("group full!")
+        }
+    })
+ 
+    
+}
+
+function creategroup(sendername,receivername){
     var group_create_sql = "insert into groupsinfo (member1,member2) values ('" + sendername + "','" + receivername + "')"
-    var search_groupid = "select * from groupsinfo where member1='" + sendername + "'"
-    if(groupid != -1){
-         DB_op(change_receiver_group)
-         connection.query(search_groupid,(err,res)=>{
-            if(err){
-            }
-            else{
-                if(res[0].member3 == null){
-                    connection.query("UPDATE groupsinfo SET member3 ='" + receivername + "' WHERE  groupid ='" + groupid + "'")
-                }
-                else if(res[0].member4 == null){
-                    connection.query("UPDATE groupsinfo SET member4 ='" + receivername + "' WHERE  groupid ='" + groupid + "'")
-                }
-                else{
-                    connection.query("UPDATE groupsinfo SET member5 ='" + receivername + "' WHERE  groupid ='" + groupid + "'")
-                }
-            }
-        })
-         return 1
-    }
-    else{
-        DB_op(group_create_sql);
-        connection.query(search_groupid,(err,res)=>{
-            var op1 = "UPDATE userinfo SET groupid ='" + res[0].groupid + "' WHERE username='" + receivername + "'"
-            var op2 = "UPDATE userinfo SET groupid ='" + res[0].groupid + "' WHERE username='" + sendername + "'"
-            connection.query(op1)
-            connection.query(op2)
-            console.log(res)
-        })
-        // var group = DB_op(search_groupid)
-        // console.log(group)
-        // id = group[0].groupid
-        // DB_op(change_receiver_group)
-        // DB_op(change_sender_group)
-        return 1
-    }
+    var search_by_name = "select * from groupsinfo where member1='" + sendername + "'"
+    DB_op(group_create_sql);
+    connection.query(search_by_name,(err,res)=>{
+        var op1 = "UPDATE userinfo SET groupid ='" + res[0].groupid + "' WHERE username='" + receivername + "'"
+        var op2 = "UPDATE userinfo SET groupid ='" + res[0].groupid + "' WHERE username='" + sendername + "'"
+        DB_op(op1)
+        DB_op(op2)
+        console.log(res)
+    })
 }
 
 
@@ -280,7 +333,7 @@ var server = app.listen(8081, function () {
     console.log("Example app listening at http://%s:%s", host, port)
     })
 
-module.exports = {DB_op}
+module.exports = {DB_op,addgroup,creategroup}
 
 
 
