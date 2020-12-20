@@ -94,7 +94,7 @@ app.use('/get_invit',(req,res)=>{
             res.json({code:401,msg:"Invitation not exist!"})
         }
         else{
-            res.json({code: 100, invitations:result[0]})
+            res.json({code: 100, sender:result[0].sender, receiver:result[0].receiver, groupid:result[0].groupid})
         }
     })
 });
@@ -220,12 +220,14 @@ app.use('/get_group',(req,res)=>{
         }
         else{
             if(res1[0].groupid == -1){
+              //  console.log("groupinfo sent1!")
                 res.json({groupid : -1})  
             }
             else{
                 var seekgroupsql = "select * from groupsinfo where groupid='" + res1[0].groupid + "'"
                 connection.query(seekgroupsql,(err2,res2)=>{
-                    res.json({groupid: res2[0].groupid,member1: res2[0].member1,member2: res2[0].member2,member3: res2[0].member3,member4: res2[0].member4,member5: res2[0].member5,alert: res2[0].alert})
+                  //  console.log("groupinfo sent2!")
+                    res.json({groupid: res2[0].groupid,member1: res2[0].member1,member2: res2[0].member2,member3: res2[0].member3,member4: res2[0].member4,member5: res2[0].member5,alert: res2[0].alert,lantitude: res2[0].lantitude,longtitude: res2[0].longtitude})
                 })
             }
             
