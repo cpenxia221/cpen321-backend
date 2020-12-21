@@ -258,6 +258,19 @@ app.use('/switchalert',(req,res)=>{
     })
 })
 
+app.use('/updateloc',(req,res)=>{
+    var reqinfo = {
+        "groupid" : req.body.groupid,
+        "lantitude": req.body.lantitude,
+        "longtitude": req.body.longtitude
+    }
+    var seekgroupsql = "UPDATE groupsinfo SET longtitude ='" + reqinfo.longtitude + "' WHERE groupid='" + reqinfo.groupid + "'" 
+    var seekgroupsql2 = "UPDATE groupsinfo SET lantitude ='" + reqinfo.lantitude + "' WHERE groupid='" + reqinfo.groupid + "'" 
+    DB_op(seekgroupsql)
+    DB_op(seekgroupsql2)
+})
+
+
 
 function DB_op(string){
     var result
