@@ -30,13 +30,10 @@ import okhttp3.Response;
 public class Registration extends AppCompatActivity {
     public static final MediaType JSON = MediaType.parse("application/json");
     // MediaType.parse("application/json; charset=utf-8");
-    private EditText usrName;
-    private EditText pwd;
-    private EditText confirm_Pwd;
+
     private String password;
     private String confirm_Password;
     private String username;
-    private Button btn_login;
     private TextView text1;
     private String responseString = "{\"code\" : -1}";
     private int res_code = -1;
@@ -51,9 +48,9 @@ public class Registration extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
         app = (appData) getApplication();
 
-        usrName = (EditText) findViewById(R.id.et_usrname_reg);
-        pwd = (EditText) findViewById(R.id.et_pwd_reg);
-        confirm_Pwd = (EditText) findViewById(R.id.et_confirmpwd);
+        EditText usrName = (EditText) findViewById(R.id.et_usrname_reg);
+        EditText pwd = (EditText) findViewById(R.id.et_pwd_reg);
+        EditText confirm_Pwd = (EditText) findViewById(R.id.et_confirmpwd);
         text1 = findViewById(R.id.response_buffer_sign_up);
 
         usrName.addTextChangedListener(new TextWatcher() {
@@ -105,7 +102,7 @@ public class Registration extends AppCompatActivity {
 
             }
         });
-        btn_login = findViewById(R.id.btn_signUp);
+        Button btn_login = findViewById(R.id.btn_signUp);
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

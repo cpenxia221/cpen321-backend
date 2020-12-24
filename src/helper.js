@@ -42,10 +42,5 @@ var login_info = {
 
 
 
-async function logintest_helper(){
-  const respose = await axios.post('http://localhost:8081/login',login_info);
-  return respose;
-}
 
-
-module.exports = {getDistance, getTimeRemain,current_loc, dest_loc,logintest_helper};
+module.exports = {getDistance, getTimeRemain,current_loc, dest_loc};

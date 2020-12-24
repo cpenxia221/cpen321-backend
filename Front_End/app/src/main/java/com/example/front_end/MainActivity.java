@@ -9,13 +9,11 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView txt_sign_up;
-    private Button btn_log_in;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        txt_sign_up = findViewById(R.id.reg);
+        TextView txt_sign_up = findViewById(R.id.reg);
         txt_sign_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -23,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        btn_log_in = findViewById(R.id.btn_login);
+        Button btn_log_in = findViewById(R.id.btn_login);
         btn_log_in.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

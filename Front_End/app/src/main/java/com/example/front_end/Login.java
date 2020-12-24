@@ -27,11 +27,10 @@ import org.json.*;
 public class Login extends AppCompatActivity {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private EditText usrName;
-    private EditText pwd;
+
+
     private String password = "";
     private String username = "";
-    private Button btn_login;
     private String responseString = "{\"code\" : -1}";
     private int res_code = -1;
 
@@ -42,8 +41,8 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        usrName = (EditText) findViewById(R.id.et_usrname);
-        pwd = (EditText) findViewById(R.id.et_pwd);
+        EditText usrName = (EditText) findViewById(R.id.et_usrname);
+        EditText pwd = (EditText) findViewById(R.id.et_pwd);
         app = (appData)getApplication();
         text1 = findViewById(R.id.response_buffer_login);
 
@@ -79,7 +78,7 @@ public class Login extends AppCompatActivity {
 
             }
         });
-        btn_login = findViewById(R.id.btn_login);
+        Button btn_login = findViewById(R.id.btn_login);
 
         //This block control log in process
         btn_login.setOnClickListener(new View.OnClickListener() {

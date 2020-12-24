@@ -246,11 +246,11 @@ app.use('/switchalert',(req,res)=>{
             result = -1
         }
         else{
-            if(res[0].alert == 0){
+            if(res[0].alert == '0'){
                 var turnOnAlertsql = "UPDATE groupsinfo SET alert ='" + "1" + "' WHERE groupid='" + reqinfo.groupid + "'" 
                 connection.query(turnOnAlertsql)
             }
-            else if(res[0].alert == 1){
+            else if(res[0].alert == '1'){
                 var turnOnAlertsql2 = "UPDATE groupsinfo SET alert ='" + "0" + "' WHERE groupid='" + reqinfo.groupid + "'" 
                 connection.query(turnOnAlertsql2)
             }
@@ -342,13 +342,13 @@ app.get('/time',function(req,res){
     res.status(200).send(moment().format('MMMM Do YYYY, h:mm:ss a'));
 })
 
-var server = app.listen(8081, function () {
-    var host = server.address().address
-    var port = server.address().port
-    console.log("Example app listening at http://%s:%s", host, port)
-    })
+// var server = app.listen(8081, function () {
+//     var host = server.address().address
+//     var port = server.address().port
+//     console.log("Example app listening at http://%s:%s", host, port)
+//     })
 
-module.exports = {DB_op,addgroup,creategroup}
+module.exports = {DB_op,addgroup,creategroup,app}
 
 
 
