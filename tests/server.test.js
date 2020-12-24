@@ -94,8 +94,8 @@ test('Invitation addgroup function test',async()=>{
     }
 
     var test_case_req2 = {
-      "sender" : "testreg1",
-      "receiver" : "testreg2",
+      "sender" : "auser",
+      "receiver" : "buser",
       "groupid" : "-1",
       "op"  : "accept"
     }
