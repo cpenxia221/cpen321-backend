@@ -62,7 +62,7 @@ test('Invitation module test',async()=>{
 
     response = await axios.post('http://104.210.38.232:8081/get_invit',{"receiver" : "buser"});
     expect(response.data.code).toBe(100)
-    expect(response.data.invitations.sender).toEqual(invit_info.sender)
+    expect(response.data.sender).toEqual(invit_info.sender)
     
     server.DB_op(delete_invit)
 
@@ -112,9 +112,7 @@ test('Invitation addgroup function test',async()=>{
     response = await axios.post('http://104.210.38.232:8081/accept_invit',test_case_req2);
     expect(response.data.code).toBe(405)
 
-    response = await axios.post('http://104.210.38.232:8081/send_invit',{"sender" : "auser","receiver" : "buser"});
-    expect(response.data.code).toBe(100)
-    
+  
     server.DB_op(insert_invita2)
     response = await axios.post('http://104.210.38.232:8081/accept_invit',test_case_req2);
     expect(response.data.code).toBe(101)
