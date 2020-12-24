@@ -37,14 +37,14 @@ public class Login extends AppCompatActivity {
 
     final static String TAG = "location_service";
     private TextView text1;
-    private app_data app;
+    private appData app;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         usrName = (EditText) findViewById(R.id.et_usrname);
         pwd = (EditText) findViewById(R.id.et_pwd);
-        app = (app_data)getApplication();
+        app = (appData)getApplication();
         text1 = findViewById(R.id.response_buffer_login);
 
         usrName.addTextChangedListener(new TextWatcher() {
@@ -88,7 +88,7 @@ public class Login extends AppCompatActivity {
 
                 //Special username for debugging, log in without http request.
                 if(username.equals("debug")){
-                    Intent intent = new Intent(Login.this, location_Activity.class);
+                    Intent intent = new Intent(Login.this, locationActivity.class);
                     startActivity(intent);
                 }
 
@@ -136,7 +136,7 @@ public class Login extends AppCompatActivity {
 
                     if (res_code > -1) {
                         app.setUsername(username);
-                        Intent intent = new Intent(Login.this, location_Activity.class);
+                        Intent intent = new Intent(Login.this, locationActivity.class);
                         startActivity(intent);
                     } else {
                         Toast.makeText(Login.this, "Log in failed: no such username or password!", Toast.LENGTH_SHORT).show();

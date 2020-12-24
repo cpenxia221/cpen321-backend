@@ -2,7 +2,6 @@ package com.example.front_end;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -41,7 +40,7 @@ public class Registration extends AppCompatActivity {
     private TextView text1;
     private String responseString = "{\"code\" : -1}";
     private int res_code = -1;
-    private app_data app;
+    private appData app;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +49,7 @@ public class Registration extends AppCompatActivity {
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        app = (app_data) getApplication();
+        app = (appData) getApplication();
 
         usrName = (EditText) findViewById(R.id.et_usrname_reg);
         pwd = (EditText) findViewById(R.id.et_pwd_reg);
@@ -156,7 +155,7 @@ public class Registration extends AppCompatActivity {
 
                     if(res_code > -1) {
                         app.setUsername(username);
-                        Intent intent = new Intent(Registration.this, location_Activity.class);
+                        Intent intent = new Intent(Registration.this, locationActivity.class);
                         startActivity(intent);
                     }
                     else{

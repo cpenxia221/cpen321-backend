@@ -16,11 +16,11 @@
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
+    android:id="@+id/map_main"
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="400dp"
-    tools:context=".location_Activity" />
+    tools:context=".locationActivity" />
 
     <TextView
         android:id="@+id/dest_info"
@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:layout_below="@id/map"
+        android:layout_below="@id/map_main"
         android:textSize="25dp"
         android:text="Destination to be set." />
 
