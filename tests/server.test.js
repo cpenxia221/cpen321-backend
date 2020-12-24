@@ -94,8 +94,8 @@ test('Invitation addgroup function test',async()=>{
     }
 
     var test_case_req2 = {
-      "sender" : "auser",
-      "receiver" : "buser",
+      "sender" : "testreg1",
+      "receiver" : "testreg2",
       "groupid" : "-1",
       "op"  : "accept"
     }
@@ -106,6 +106,14 @@ test('Invitation addgroup function test',async()=>{
       "groupid" : "-1",
       "op"  : "refuse"
     }
+
+    var test_case_req4 = {
+      "sender" : "auser",
+      "receiver" : "buser",
+      "groupid" : "-1",
+      "op"  : "accept"
+    }
+
     response = await axios.post('http://104.210.38.232:8081/accept_invit',test_case_req1);
     expect(response.data.code).toBe(401)
 
@@ -114,7 +122,7 @@ test('Invitation addgroup function test',async()=>{
 
   
    
-    response = await axios.post('http://104.210.38.232:8081/accept_invit',test_case_req2);
+    response = await axios.post('http://104.210.38.232:8081/accept_invit',test_case_req4);
     expect(response.data.code).toBe(101)
 
  
