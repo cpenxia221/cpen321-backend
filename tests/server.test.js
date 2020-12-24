@@ -113,7 +113,7 @@ test('Invitation addgroup function test',async()=>{
     expect(response.data.code).toBe(405)
 
   
-    server.DB_op(insert_invita2)
+   
     response = await axios.post('http://104.210.38.232:8081/accept_invit',test_case_req2);
     expect(response.data.code).toBe(101)
 
